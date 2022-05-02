@@ -185,7 +185,7 @@ NSString *const qrDetected = @"qrCodeDetected";
 - (void)captureOutput:(AVCaptureOutput *)output
 didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects
        fromConnection:(AVCaptureConnection *)connection {
-    if(_isStreamingImages) {
+   
         AVMetadataMachineReadableCodeObject *metadata = (AVMetadataMachineReadableCodeObject *)[metadataObjects firstObject];
         if(metadata) {
             [_metadataMethodChannel invokeMethod:qrDetected
@@ -196,7 +196,7 @@ didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects
                     @"corners" : metadata.corners,
             }}];
         }
-    }
+ 
 }
 
 - (void)enableQRDetection:(BOOL)enable {

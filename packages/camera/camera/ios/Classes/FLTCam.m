@@ -165,6 +165,7 @@ NSString *const qrDetected = @"qrCodeDetected";
 
     _metadataOutput = [[AVCaptureMetadataOutput alloc] init];
     [_metadataOutput setMetadataObjectsDelegate:self queue:_captureSessionQueue];
+//    [_metadataOutput setRectOfInterest:CGRectMake(0.24, 0.2, 0.4, 0.6)];
   [_captureSession addInputWithNoConnections:_captureVideoInput];
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
     [_captureSession addConnection:connection];
@@ -173,10 +174,14 @@ NSString *const qrDetected = @"qrCodeDetected";
     [_capturePhotoOutput setHighResolutionCaptureEnabled:YES];
     [_captureSession addOutput:_capturePhotoOutput];
   }
+    if (@available(iOS 13.0, *)) {
+        _captureVideoOutput.automaticallyConfiguresOutputBufferDimensions = NO;
+        _captureVideoOutput.deliversPreviewSizedOutputBuffers = YES;
+    }
   _motionManager = [[CMMotionManager alloc] init];
   [_motionManager startAccelerometerUpdates];
 
-  [self setCaptureSessionPreset:_resolutionPreset];
+  [self setCaptureSessionPreset:FLTResolutionPresetHigh];
   [self updateOrientation];
 
   return self;

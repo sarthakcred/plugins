@@ -179,7 +179,7 @@ NSString *const qrDetected = @"qrCodeDetected";
   _motionManager = [[CMMotionManager alloc] init];
   [_motionManager startAccelerometerUpdates];
 
-  [self setCaptureSessionPreset:FLTResolutionPresetVeryHigh];
+  [self setCaptureSessionPreset:_resolutionPreset];
   [self updateOrientation];
 
   return self;

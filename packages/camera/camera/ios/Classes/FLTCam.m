@@ -45,6 +45,7 @@
 @property(readonly, nonatomic) AVCaptureSession *captureSession;
 
 @property(readonly, nonatomic) AVCaptureInput *captureVideoInput;
+@property(nonatomic, strong) dispatch_queue_t captureMetadataSessionQueue;
 /// Tracks the latest pixel buffer sent from AVFoundation's sample buffer delegate callback.
 /// Used to deliver the latest pixel buffer to the flutter engine via the `copyPixelBuffer` API.
 @property(readwrite, nonatomic) CVPixelBufferRef latestPixelBuffer;
@@ -121,6 +122,8 @@ NSString *const qrDetected = @"qrCodeDetected";
   } @catch (NSError *e) {
     *error = e;
   }
+  dispatch_queue_attr_t qos = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, -1);
+  _captureMetadataSessionQueue = dispatch_queue_create("io.flutter.camera.captureMetadataSessionQueue", qos);
   _enableAudio = enableAudio;
   _captureSessionQueue = captureSessionQueue;
   _pixelBufferSynchronizationQueue =
@@ -150,9 +153,9 @@ NSString *const qrDetected = @"qrCodeDetected";
   }
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
-  _captureVideoOutput.videoSettings =
-      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(_videoFormat)};
-  [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
+  // _captureVideoOutput.videoSettings =
+  //     @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(_videoFormat)};
+   [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
   [_captureVideoOutput setSampleBufferDelegate:self queue:captureSessionQueue];
 
   AVCaptureConnection *connection =
@@ -164,7 +167,7 @@ NSString *const qrDetected = @"qrCodeDetected";
   }
 
     _metadataOutput = [[AVCaptureMetadataOutput alloc] init];
-    [_metadataOutput setMetadataObjectsDelegate:self queue:_captureSessionQueue];
+    [_metadataOutput setMetadataObjectsDelegate:self queue:_captureMetadataSessionQueue];
   [_captureSession addInputWithNoConnections:_captureVideoInput];
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
     [_captureSession addConnection:connection];
@@ -226,9 +229,9 @@ didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects
 }
 
 - (void)setVideoFormat:(OSType)videoFormat {
-  _videoFormat = videoFormat;
-  _captureVideoOutput.videoSettings =
-      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)};
+  // _videoFormat = videoFormat;
+  // _captureVideoOutput.videoSettings =
+  //     @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)};
 }
 
 - (void)setDeviceOrientation:(UIDeviceOrientation)orientation {

@@ -170,7 +170,8 @@ NSString *const qrDetected = @"qrCodeDetected";
     [_metadataOutput setMetadataObjectsDelegate:self queue:_captureMetadataSessionQueue];
   [_captureSession addInputWithNoConnections:_captureVideoInput];
   [_captureSession addOutputWithNoConnections:_captureVideoOutput];
-    [_captureSession addConnection:connection];
+  [_captureSession addConnection:connection];
+  [self enableQRDetection:YES];
   if (@available(iOS 10.0, *)) {
     _capturePhotoOutput = [AVCapturePhotoOutput new];
     [_capturePhotoOutput setHighResolutionCaptureEnabled:YES];
